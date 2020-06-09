@@ -1,29 +1,36 @@
 <template>
     <div>
         <button @click="showCommentForm = !showCommentForm" class="btn btn__add">
-                    <span></span>
-        </button>
-        <transition>
-            <div v-show="showCommentForm">
+                                <span></span>
+                    </button>
+        <div name="overlay">
+            <transition v-if="showCommentForm">
                 <div class="drawer__overlay" @click.stop="showCommentForm = !showCommentForm"></div>
-                <div class="drawer__base">
+            </transition>
+            <transition name="drawer">
+                <div class="drawer__base" v-if="showCommentForm">
                     <div class="drawer__baseInner">
                         <p>新しいコメント</p>
                         <div v-if="errorMessage.emptyName == true">
                             <p>ニックネームを入力してください</p>
                         </div>
-                        <p><input type="text" v-model="newPost.name" placeholder="ニックネーム" class="form form__input"></p>
+                        <p><input type="text" v-model="newPost.name" placeholder="ニックネーム" v-on:keyup.shift.enter="addComment()" class="form form__input"></p>
                         <div v-if="errorMessage.emptyComment == true">
                             <p>コメントを入力してください</p>
                         </div>
-                        <p><textarea type="text" rows="10" cols="5" v-model="newPost.comment" v-on:keyup.enter="addComment()" placeholder="コメント" class="form form__inputComment"></textarea></p>
-                        <button @click="addComment()" class="btn btn__send">
-                                    投稿<span>（Press Enter）</span>
-                                </button>
+                        <p>
+                            <textarea type="text" rows="10" cols="5" v-model="newPost.comment" v-on:keyup.shift.enter="addComment()" placeholder="コメント" class="form form__inputComment"></textarea>
+                        <span class="btn__keyTips">send: Shift + Enter</span>
+                        </p>
+                        <div>
+                            <button @click="addComment()" class="btn btn__send">
+                                                    投稿
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </transition>
+            </transition>
+        </div>
     </div>
 </template>
 
@@ -84,10 +91,40 @@
 </script>
 
 <style lang="scss" scoped>
+    .drawer-enter,
+    .drawer-leave-to {
+        transform: translateY(500px);
+    }
+    .drawer-enter-to,
+    .drawer-leave {
+        transform: translateY(0);
+    }
+    .drawer-enter-active,
+    .drawer-leave-active {
+        transition: transform .5s;
+    }
+    .overlay-enter,
+    .overlay-leave-to {
+        opacity: 0;
+    }
+    .overlay-enter-to,
+    .overlay-leave {
+        opacity: 1;
+    }
+    .opacity-enter-active,
+    .opacity-leave-active {
+        transition: opacity .2s;
+    }
     .btn {
         cursor: pointer;
         &:hover {
             opacity: .9;
+        }
+        &__keyTips {
+            display: block;
+            font-size: 14px;
+            font-weight: normal;
+            text-align: right;
         }
         &__send {
             width: 100%;
@@ -98,10 +135,6 @@
             font-size: 16px;
             font-weight: bold;
             background-color: #2c3e50;
-            span {
-                font-size: 14px;
-                font-weight: normal;
-            }
         }
         &__add {
             width: 80px;
@@ -161,10 +194,10 @@
             background-color: #f7f9f9;
             position: fixed;
             left: 0;
-            bottom: 0px;
+            bottom: 0;
             border-radius: 30px 30px 0 0;
             width: 100%;
-            min-height: 500px;
+            height: 500px;
         }
         &__baseInner {
             padding: 24px;
