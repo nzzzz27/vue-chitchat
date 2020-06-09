@@ -1,10 +1,19 @@
 <template>
     <div>
-        <button @click="showCommentForm = !showCommentForm" class="btn btn__add">
-                                <span></span>
-                    </button>
-        <div name="overlay">
-            <transition v-if="showCommentForm">
+        <div v-if="isSignin">
+            <div>
+                <button @click="showCommentForm = !showCommentForm" class="btn btn__add">
+                   <span></span>
+                   </button>
+            </div>
+        </div>
+        <div v-else>
+            <button @click="linkToLogin()" class="btn btn__add">
+                <span></span>
+            </button>
+        </div>
+        <div>
+            <transition name="overlay" v-if="showCommentForm">
                 <div class="drawer__overlay" @click.stop="showCommentForm = !showCommentForm"></div>
             </transition>
             <transition name="drawer">
@@ -20,12 +29,12 @@
                         </div>
                         <p>
                             <textarea type="text" rows="10" cols="5" v-model="newPost.comment" v-on:keyup.shift.enter="addComment()" placeholder="コメント" class="form form__inputComment"></textarea>
-                        <span class="btn__keyTips">send: Shift + Enter</span>
+                            <span class="btn__keyTips">send: Shift + Enter</span>
                         </p>
                         <div>
                             <button @click="addComment()" class="btn btn__send">
-                                                    投稿
-                            </button>
+                                                                                    投稿
+                                                            </button>
                         </div>
                     </div>
                 </div>
@@ -51,19 +60,29 @@
                 },
             }
         },
+        computed: {
+            isSignin() {
+                return this.idToken !== null ? true : false
+            },
+            idToken() {
+                return this.$store.getters.idToken
+            }
+        },
         methods: {
+            linkToLogin() {
+                this.$router.push('login')
+            },
             addComment() {
                 if (Object.keys(this.newPost.comment).length === 0 || Object.keys(this.newPost.name).length === 0) {
                     if (Object.keys(this.newPost.name).length === 0) {
                         this.errorMessage.emptyName = true
-                        console.log('error')
                     }
                     if (Object.keys(this.newPost.comment).length === 0) {
                         this.errorMessage.emptyComment = true
                     }
                 } else {
                     axios.post(
-                        '/comments', {
+                        'https://firestore.googleapis.com/v1/projects/vue-chat-82fcf/databases/(default)/documents/comments', {
                             fields: {
                                 name: {
                                     stringValue: this.newPost.name
@@ -71,13 +90,15 @@
                                 comment: {
                                     stringValue: this.newPost.comment
                                 }
-                            },
+                            }
+                        }, {
+                            headers: {
+                                Authorization: `Bearer ${this.idToken}`
+                            }
                         }
                     ).then(response => {
                         console.log(response);
                         this.$store.dispatch('getPosts')
-                    }).catch(error => {
-                        console.log(error);
                     })
                     this.newPost.comment = '',
                         this.newPost.name = '',
@@ -114,70 +135,6 @@
     .opacity-enter-active,
     .opacity-leave-active {
         transition: opacity .2s;
-    }
-    .btn {
-        cursor: pointer;
-        &:hover {
-            opacity: .9;
-        }
-        &__keyTips {
-            display: block;
-            font-size: 14px;
-            font-weight: normal;
-            text-align: right;
-        }
-        &__send {
-            width: 100%;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            background-color: #2c3e50;
-        }
-        &__add {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: none;
-            background-color: #dc0a58;
-            position: fixed;
-            bottom: 100px;
-            left: 80%;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
-            span {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                &::before,
-                &::after {
-                    content: '';
-                    position: absolute;
-                    background-color: white;
-                    border-radius: 3px;
-                }
-                &::before {
-                    width: 5px;
-                    height: 40px;
-                }
-                &::after {
-                    width: 40px;
-                    height: 5px;
-                }
-            }
-        }
-    }
-    .form {
-        width: 100%;
-        padding: 8px;
-        font-size: 16px;
-        box-sizing: border-box;
-        border: 1px solid rgba(0, 0, 0, .12);
-        border-radius: 5px;
-        &:not(:first-of-type) {
-            margin-top: 8px;
-        }
     }
     .drawer {
         &__overlay {

@@ -1,23 +1,19 @@
 <template>
   <div>
-    <h1>Chit Chat</h1>
-    <main>
       <article class="l-list" v-for="(post, index) of posts" :key="index">
         <div class="content__sub">
           <span class="user__avatar">
               <img src="../assets/default_user.png" alt="" width="150" height="150">
-                <!-- <img :src="post.fields.avatar.stringValue" :alt="post.fields.name.stringValue + 'さんの写真'"> -->
             </span>
         </div>
         <div class="content__main">
           <p class="user__name">{{ post.fields.name.stringValue }}</p>
           <div class="content__inner balloon">
             <p class="content__comment">{{ post.fields.comment.stringValue }}</p>
-            <time class="content__time">{{ new Date(post.createTime).toLocaleDateString() }}</time>
+<time class="content__time">{{ new Date(post.createTime).toLocaleDateString() }}</time>
           </div>
         </div>
       </article>
-    </main>
   </div>
 </template>
 
@@ -36,8 +32,7 @@
     },
     created() {
       this.$store.dispatch('getPosts')
-    },
-    methods: {}
+    }
   }
 </script>
 
@@ -98,7 +93,7 @@
       height: 60px;
       border-radius: 50%;
       overflow: hidden;
-      background-color: chocolate;
+      background-color: rgba(0,0,0,.12);
       margin-top: 20px;
       img {
         position: absolute;

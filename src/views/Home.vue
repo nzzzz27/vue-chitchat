@@ -1,14 +1,16 @@
 <template>
   <div class="home">
     <div class="l-container__inner">
-       <ChatBoard />
+      <h1 class="title__level1">Chit Chat</h1>
+       <main>
+         <ChatBoard />
+       </main>
     </div>
     <Form />
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
 import ChatBoard from '@/components/ChatBoard.vue'
 import Form from '@/components/Form.vue'
 

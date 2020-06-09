@@ -1,5 +1,4 @@
 # vue-chat
-# Site URL
 https://nzzzz27.github.io/vue-chitchat/#/
 
 ## Project setup
